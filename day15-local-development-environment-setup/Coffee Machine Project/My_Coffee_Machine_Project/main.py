@@ -1,0 +1,97 @@
+#My completed solution 07/25/2025
+# TODO 1. Prompt user by asking “What would you like? (espresso/latte/cappuccino):”
+# TODO 2. Turn off the Coffee Machine by entering “off” to the prompt.
+# TODO 3. Print report.
+# TODO 4. Check if resource is sufficient.
+# TODO 5. Process coins in USD.
+# TODO 6. Check if transaction is successful.
+# TODO 7 Make coffe.
+
+
+MENU = {
+    "espresso": {
+        "ingredients": {
+            "water": 50,
+            "coffee": 18,
+        },
+        "cost": 1.5,
+    },
+    "latte": {
+        "ingredients": {
+            "water": 200,
+            "milk": 150,
+            "coffee": 24,
+        },
+        "cost": 2.5,
+    },
+    "cappuccino": {
+        "ingredients": {
+            "water": 250,
+            "milk": 100,
+            "coffee": 24,
+        },
+        "cost": 3.0,
+    }
+}
+
+resources = {
+    "water": 300,
+    "milk": 200,
+    "coffee": 100,
+}
+
+money = 0
+
+def sufficient_resource_check(order_ingredients):
+    """Returns True if it can be made, False if not enough resources."""
+    for item in order_ingredients:
+        if order_ingredients[item] >= resources[item]:
+            print(f"Sorry there is not enough {item}.")
+            return False
+    return True
+
+def true_transaction(money_received, drink_cost):
+    """Return True when payment accepted, False when insufficient."""
+    if money_received >= drink_cost:
+        change = round(money_received - drink_cost, 2)
+        print(f"Here is ${change} in change.")
+        global money
+        money += drink_cost
+        return True
+    else:
+        print("Sorry that's not enough money. Money refunded.")
+        return False
+
+
+def coin_calculation():
+    """Total calculated coins inserted."""
+    print("Please insert coins.")
+    total = int(input("How many quarters?: ")) * 0.25
+    total += int(input("How many dimes?: ")) * 0.1
+    total += int(input("How many nickles?: ")) * 0.05
+    total += int(input("How many pennies?: ")) * 0.01
+    return total
+
+def make_coffee(drink_name, order_ingredients):
+    """Reduce ingredients from resources."""
+    for item in order_ingredients:
+        resources[item] -= order_ingredients[item]
+    print(f"Here is your {drink_name}. ")
+
+is_on = True
+
+while is_on:
+    choice = input("What would you like? Type (espresso/latte/cappuccino): ").lower()
+    if choice == "off":
+        is_on = False
+    elif choice == "report":
+        print(f"Water: {resources['water']}ml")
+        print(f"Milk: {resources['milk']}ml")
+        print(f"Coffee: {resources['coffee']}g")
+        print(f"Money: ${money}")
+    else:
+        selection = MENU[choice]
+        if sufficient_resource_check(selection["ingredients"]):
+            payment = coin_calculation()
+            if true_transaction(payment, selection["cost"]):
+                make_coffee(choice, selection["ingredients"])
